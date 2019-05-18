@@ -15,7 +15,7 @@ SPIDER_MODULES = ['fabiaoqing.spiders']
 NEWSPIDER_MODULE = 'fabiaoqing.spiders'
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-USER_AGENT = 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Mobile Safari/537.36'
+USER_AGENT = 'MMozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.131 Safari/537.36'
 
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = False
@@ -63,9 +63,9 @@ ROBOTSTXT_OBEY = False
 
 # Configure item pipelines
 # See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
-# ITEM_PIPELINES = {
-#    'fabiaoqing.pipelines.FabiaoqingPipeline': 300,
-# }
+ITEM_PIPELINES = {
+    'fabiaoqing.pipelines.FabiaoqingPipeline': 300,
+}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://doc.scrapy.org/en/latest/topics/autothrottle.html
@@ -87,3 +87,10 @@ ROBOTSTXT_OBEY = False
 # HTTPCACHE_DIR = 'httpcache'
 # HTTPCACHE_IGNORE_HTTP_CODES = []
 # HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
+FEED_EXPORT_ENCODING = 'utf-8'
+
+MYSQL_HOST = '数据库地址'
+MYSQL_DATABASE = '数据库名'
+MYSQL_USER = '数据库用户名'
+MYSQL_PASSWORD = '数据库密码'
+MYSQL_PORT = '数据库端口号'

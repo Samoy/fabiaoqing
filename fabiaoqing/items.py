@@ -8,7 +8,17 @@
 import scrapy
 
 
-class FabiaoqingItem(scrapy.Item):
-    # define the fields for your item here like:
-    # name = scrapy.Field()
-    pass
+class CategoryItem(scrapy.Item):
+    name = scrapy.Field()
+    alias = scrapy.Field()
+
+
+class ListItem(scrapy.Item):
+    name = scrapy.Field()
+    category = scrapy.Field()
+
+
+class EmoticonItem(scrapy.Item):
+    name = scrapy.Field()
+    url = scrapy.Field()
+    title = scrapy.Field()
