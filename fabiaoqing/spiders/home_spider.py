@@ -11,6 +11,7 @@ class HomeSpider(scrapy.Spider):
 
     def parse(self, response):
         category_list = response.xpath('//*[@id="bqbcategory"]/a')
+        # 解析标题数据
         for category in category_list:
             category_item = CategoryItem()
             category_item["name"] = category.xpath('text()').extract_first().strip().replace('\n', '')
@@ -20,14 +21,22 @@ class HomeSpider(scrapy.Spider):
             yield scrapy.Request(response.urljoin(href), callback=self.parse_list)
 
     def parse_list(self, response):
+        # 解析列表数据
         href = response.css("#bqbcategory > a.item.active").xpath("@href").extract_first()
         alias = href.strip().split("/")[-1].split(".")[0]
         emoticon_list = response.xpath('//*[@id="bqblist"]/a/@href').extract()
         for emoticon in emoticon_list:
+            # 请求详情数据
             yield scrapy.Request(response.urljoin(emoticon),
                                  callback=lambda re, category=alias: self.parse_emoticon(re, category))
-        # todo:在此处爬取下一页的数据
+        # 请求下一页数据
+        pages = response.xpath('//*[@id="bqblist"]/div[3]/a')
+        for page in pages:
+            if "下一页" == page.xpath('text()').extract_first().strip().replace("\n", ""):
+                next_href = page.xpath('@href').extract_first().strip()
+                yield scrapy.Request(response.urljoin(next_href), callback=self.parse_list)
 
+    # 解析详情数据
     def parse_emoticon(self, response, category):
         img_list = response.xpath('//div[@class="bqppdiv1"]/img')
         list_item = ListItem()
