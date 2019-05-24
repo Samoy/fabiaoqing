@@ -1,2 +1,2 @@
-PyMySQL==0.9.3
+PyMySQL==0.8.1
 Scrapy==1.6.0

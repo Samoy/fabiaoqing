@@ -10,15 +10,15 @@ MYSQL_PASSWORD = '数据库密码'
 MYSQL_PORT = '数据库端口号'
 ```
 ## 介绍
-本项目使用scrapy框架爬取了[发表情](http://www.fabiaoqing.com)网站的表情包，并将所获取的数据存入了MySQL数据库。
-## 系统要求
-* python:3.6.5
-* scrapy:1.6.0
-* pymsql:0.9.3
-* docker(可选)
+本项目使用Scrapy框架爬取了[发表情](http://www.fabiaoqing.com)网站的表情包，并将所获取的数据存入了MySQL数据库。
+## 环境要求
+* Python:3.6.5
+* Scrapy:1.6.0
+* PyMySQL:0.8.1
+* Docker(可选)
 ## 运行及部署
 1. ### 创建数据库
-    database.sql文件是Mysql数据库创建文件，使用该文件创建数据可和表。
+    database.sql文件是Mysql数据库创建文件，使用该文件创建数据库和表。
 2. ### [修改文件](#注意非常重要)
     重命名settings.example.py文件为settings.py，并修改其中的数据库相关配置
 3. ### 运行
@@ -38,3 +38,4 @@ MYSQL_PORT = '数据库端口号'
 1. 防止重复爬取
 2. 图片下载
 3. 表情包制作
+4. 代理池
