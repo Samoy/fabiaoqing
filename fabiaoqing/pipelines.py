@@ -39,30 +39,30 @@ class FabiaoqingPipeline(object):
         return cls(db_param)
 
     def process_item(self, item, spider):
-        # if isinstance(item, CategoryItem):
-        #     try:
-        #         sql = "insert into category (objectId,name,alias) values (%s,%s,%s)"
-        #         self.cursor.execute(sql, (item['name'], item['alias']))
-        #         self.connect.commit()
-        #     except IntegrityError as error:
-        #         if error.args[0] == 1062:
-        #             print("该数据已存在")
-        # elif isinstance(item, ListItem):
-        #     try:
-        #         sql = "insert into list (name,category) values (%s,%s)"
-        #         self.cursor.execute(sql, (item['name'], item["category"]))
-        #         self.connect.commit()
-        #     except IntegrityError as error:
-        #         if error.args[0] == 1062:
-        #             print("该数据已存在")
-        # elif isinstance(item, EmoticonItem):
-        #     try:
-        #         sql = "insert into emoticon(name,url,title) values(%s,%s,%s)"
-        #         self.cursor.execute(sql, (item["name"], item["url"], item["title"]))
-        #         self.connect.commit()
-        #     except IntegrityError as error:
-        #         if error.args[0] == 1062:
-        #             print("该数据已存在")
+        if isinstance(item, CategoryItem):
+            try:
+                sql = "insert into category (objectId,name) values (%s,%s)"
+                self.cursor.execute(sql, (item['name'], item['objectId']))
+                self.connect.commit()
+            except IntegrityError as error:
+                if error.args[0] == 1062:
+                    print("该数据已存在")
+        elif isinstance(item, GroupItem):
+            try:
+                sql = "insert into `group` (name,objectId,parentId) values (%s,%s,%s)"
+                self.cursor.execute(sql, (item['name'], item["objectId"], item["parentId"]))
+                self.connect.commit()
+            except IntegrityError as error:
+                if error.args[0] == 1062:
+                    print("该数据已存在")
+        elif isinstance(item, EmoticonItem):
+            try:
+                sql = "insert into emoticon(name,url,objectId,parentId) values(%s,%s,%s,%s)"
+                self.cursor.execute(sql, (item["name"], item["url"], item["objectId"], item["parentId"]))
+                self.connect.commit()
+            except IntegrityError as error:
+                if error.args[0] == 1062:
+                    print("该数据已存在")
         return item
 
     def close_spider(self, spider):
