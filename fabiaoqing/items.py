@@ -10,15 +10,17 @@ import scrapy
 
 class CategoryItem(scrapy.Item):
     name = scrapy.Field()
-    alias = scrapy.Field()
+    objectId = scrapy.Field()
 
 
-class ListItem(scrapy.Item):
+class GroupItem(scrapy.Item):
     name = scrapy.Field()
-    category = scrapy.Field()
+    objectId = scrapy.Field()
+    parentId = scrapy.Field()
 
 
 class EmoticonItem(scrapy.Item):
     name = scrapy.Field()
     url = scrapy.Field()
-    title = scrapy.Field()
+    objectId = scrapy.Field()
+    parentId = scrapy.Field()

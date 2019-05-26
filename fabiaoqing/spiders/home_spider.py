@@ -1,5 +1,7 @@
 import scrapy
-from ..items import CategoryItem, ListItem, EmoticonItem
+
+from ..util import md5_encoding
+from ..items import CategoryItem, GroupItem, EmoticonItem
 
 
 class HomeSpider(scrapy.Spider):
@@ -16,16 +18,16 @@ class HomeSpider(scrapy.Spider):
             category_item = CategoryItem()
             category_item["name"] = category.xpath('text()').extract_first().strip().replace('\n', '')
             href = category.xpath('@href').extract_first()
-            category_item["alias"] = href.strip().split("/")[-1].split(".")[0]
+            category_item["objectId"] = md5_encoding(href.strip().split("/")[-1].split(".")[0])
             yield category_item
-            yield scrapy.Request(response.urljoin(href), callback=self.parse_list)
+            yield scrapy.Request(response.urljoin(href), callback=self.parse_group)
 
-    def parse_list(self, response):
+    def parse_group(self, response):
         # 解析列表数据
         href = response.css("#bqbcategory > a.item.active").xpath("@href").extract_first()
         alias = href.strip().split("/")[-1].split(".")[0]
-        emoticon_list = response.xpath('//*[@id="bqblist"]/a/@href').extract()
-        for emoticon in emoticon_list:
+        emoticon_group = response.xpath('//*[@id="bqblist"]/a/@href').extract()
+        for emoticon in emoticon_group:
             # 请求详情数据
             yield scrapy.Request(response.urljoin(emoticon),
                                  callback=lambda re, category=alias: self.parse_emoticon(re, category))
@@ -34,18 +36,22 @@ class HomeSpider(scrapy.Spider):
         for page in pages:
             if "下一页" == page.xpath('text()').extract_first().strip().replace("\n", ""):
                 next_href = page.xpath('@href').extract_first().strip()
-                yield scrapy.Request(response.urljoin(next_href), callback=self.parse_list)
+                yield scrapy.Request(response.urljoin(next_href), callback=self.parse_group)
 
     # 解析详情数据
     def parse_emoticon(self, response, category):
-        img_list = response.xpath('//div[@class="bqppdiv1"]/img')
-        list_item = ListItem()
-        list_item["category"] = category
-        list_item["name"] = response.xpath('//*[@id="bqb"]/div[1]/h1/text()').extract_first()
-        yield list_item
-        for img in img_list:
+        img_group = response.xpath('//div[@class="bqppdiv1"]/img')
+        group_item = GroupItem()
+        group_id = md5_encoding(response.url.strip().split("/")[-1].split(".")[0])
+        group_item["objectId"] = group_id
+        group_item["parentId"] = md5_encoding(category)
+        group_item["name"] = response.xpath('//*[@id="bqb"]/div[1]/h1/text()').extract_first()
+        yield group_item
+        for index, img in enumerate(img_group):
             emoticon_item = EmoticonItem()
             emoticon_item["url"] = img.xpath("@data-original").extract_first()
             emoticon_item["name"] = img.xpath("@alt").extract_first()
-            emoticon_item["title"] = list_item["name"]
+            href = img_group.xpath('../../a[' + str(index + 1) + ']/@href').extract_first()
+            emoticon_item["objectId"] = md5_encoding(href.split("/")[-1].split(".")[0])
+            emoticon_item["parentId"] = group_item["objectId"]
             yield emoticon_item
