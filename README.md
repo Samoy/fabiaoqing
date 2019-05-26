@@ -13,8 +13,8 @@ MYSQL_PORT = '数据库端口号'
 本项目使用Scrapy框架爬取了[发表情](http://www.fabiaoqing.com)网站的表情包，并将所获取的数据存入了MySQL数据库。
 ## 环境要求
 * Python:3.6.5
-* Scrapy:1.6.0
-* PyMySQL:0.8.1
+* Scrapy
+* PyMySQL
 * Docker(可选)
 ## 运行及部署
 1. ### 创建数据库
@@ -30,7 +30,7 @@ MYSQL_PORT = '数据库端口号'
     > #### 使用docker运行
     第一步:下载并安装Docker，关于Docker的使用在此不再赘述。
     
-    第二步:`docker build bqb:1.0 .`
+    第二步:`docker build -t bqb:1.0 .`
     
     第三步:`docker run bqb:1.0`
 
