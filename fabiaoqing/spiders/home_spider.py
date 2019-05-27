@@ -20,7 +20,7 @@ class HomeSpider(scrapy.Spider):
             href = category.xpath('@href').extract_first()
             category_item["objectId"] = md5_encoding(href.strip().split("/")[-1].split(".")[0])
             category_item["order"] = index + 1
-            # yield category_item
+            yield category_item
             yield scrapy.Request(response.urljoin(href), callback=lambda re, ca=category_item: self.parse_group(re, ca))
 
     # todo:添加分组排序
