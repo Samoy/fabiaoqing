@@ -42,7 +42,8 @@ class HomeSpider(scrapy.Spider):
             yield group_item
             # 请求详情数据
             yield scrapy.Request(response.urljoin(emoticon),
-                                 callback=lambda re, g_id=group_item["objectId"]: self.parse_emoticon(re, g_id))
+                                 callback=lambda re, g_id=group_item["objectId"], i=index: self.parse_emoticon(re, g_id,
+                                                                                                               i))
         # 请求下一页数据
         pages = response.xpath('//*[@id="bqblist"]/div[3]/a')
         for page in pages:
@@ -52,7 +53,7 @@ class HomeSpider(scrapy.Spider):
 
     # 解析详情数据
     # todo:添加表情包排序
-    def parse_emoticon(self, response, group_id):
+    def parse_emoticon(self, response, group_id, group_index):
         img_group = response.xpath('//div[@class="bqppdiv1"]/img')
         for index, img in enumerate(img_group):
             emoticon_item = EmoticonItem()
@@ -60,5 +61,6 @@ class HomeSpider(scrapy.Spider):
             emoticon_item["name"] = img.xpath("@alt").extract_first()
             href = img_group.xpath('../../a[%d]/@href' % (index + 1)).extract_first()
             emoticon_item["objectId"] = md5_encoding(href.split("/")[-1].split(".")[0])
-            emoticon_item["parentId"] = md5_encoding(group_id)
+            emoticon_item["parentId"] = group_id
+            emoticon_item["order"] = group_index
             yield emoticon_item
