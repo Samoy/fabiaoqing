@@ -14,14 +14,16 @@ class HomeSpider(scrapy.Spider):
     def parse(self, response):
         category_list = response.xpath('//*[@id="bqbcategory"]/a')
         # 解析标题数据
-        for category in category_list:
+        for (index, category) in enumerate(category_list):
             category_item = CategoryItem()
             category_item["name"] = category.xpath('text()').extract_first().strip().replace('\n', '')
             href = category.xpath('@href').extract_first()
             category_item["objectId"] = md5_encoding(href.strip().split("/")[-1].split(".")[0])
+            category_item["order"] = index
             yield category_item
             yield scrapy.Request(response.urljoin(href), callback=self.parse_group)
 
+    # todo:添加分组排序
     def parse_group(self, response):
         # 解析列表数据
         href = response.css("#bqbcategory > a.item.active").xpath("@href").extract_first()
@@ -39,6 +41,7 @@ class HomeSpider(scrapy.Spider):
                 yield scrapy.Request(response.urljoin(next_href), callback=self.parse_group)
 
     # 解析详情数据
+    # todo:添加表情包排序
     def parse_emoticon(self, response, category):
         img_group = response.xpath('//div[@class="bqppdiv1"]/img')
         group_item = GroupItem()

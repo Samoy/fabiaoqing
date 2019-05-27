@@ -41,24 +41,24 @@ class FabiaoqingPipeline(object):
     def process_item(self, item, spider):
         if isinstance(item, CategoryItem):
             try:
-                sql = "insert into category (objectId,name) values (%s,%s)"
-                self.cursor.execute(sql, (item['name'], item['objectId']))
+                sql = "insert into category (objectId,name,order) values (%s,%s,%d)"
+                self.cursor.execute(sql, (item['name'], item['objectId'], item['order']))
                 self.connect.commit()
             except IntegrityError as error:
                 if error.args[0] == 1062:
                     print("该数据已存在")
         elif isinstance(item, GroupItem):
             try:
-                sql = "insert into `group` (name,objectId,parentId) values (%s,%s,%s)"
-                self.cursor.execute(sql, (item['name'], item["objectId"], item["parentId"]))
+                sql = "insert into `group` (name,objectId,parentId,order) values (%s,%s,%s,%d)"
+                self.cursor.execute(sql, (item['name'], item["objectId"], item["parentId"], item["order"]))
                 self.connect.commit()
             except IntegrityError as error:
                 if error.args[0] == 1062:
                     print("该数据已存在")
         elif isinstance(item, EmoticonItem):
             try:
-                sql = "insert into emoticon(name,url,objectId,parentId) values(%s,%s,%s,%s)"
-                self.cursor.execute(sql, (item["name"], item["url"], item["objectId"], item["parentId"]))
+                sql = "insert into emoticon(name,url,objectId,parentId,order) values(%s,%s,%s,%s,%d)"
+                self.cursor.execute(sql, (item["name"], item["url"], item["objectId"], item["parentId"], item["order"]))
                 self.connect.commit()
             except IntegrityError as error:
                 if error.args[0] == 1062:

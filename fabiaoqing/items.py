@@ -11,12 +11,14 @@ import scrapy
 class CategoryItem(scrapy.Item):
     name = scrapy.Field()
     objectId = scrapy.Field()
+    order = scrapy.Field()
 
 
 class GroupItem(scrapy.Item):
     name = scrapy.Field()
     objectId = scrapy.Field()
     parentId = scrapy.Field()
+    order = scrapy.Field()
 
 
 class EmoticonItem(scrapy.Item):
@@ -24,3 +26,4 @@ class EmoticonItem(scrapy.Item):
     url = scrapy.Field()
     objectId = scrapy.Field()
     parentId = scrapy.Field()
+    order = scrapy.Field()
