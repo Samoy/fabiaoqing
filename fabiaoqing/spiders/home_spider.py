@@ -63,5 +63,5 @@ class HomeSpider(scrapy.Spider):
             href = img_group.xpath('../../a[%d]/@href' % (index + 1)).extract_first()
             emoticon_item["objectId"] = md5_encoding(href.split("/")[-1].split(".")[0])
             emoticon_item["parentId"] = group_id
-            emoticon_item["order"] = group_index * (index + 1)
+            emoticon_item["order"] = (group_index + 1) * (index + 1)
             yield emoticon_item
