@@ -31,7 +31,7 @@ class HomeSpider(scrapy.Spider):
         emoticon_group = response.xpath('//*[@id="bqblist"]/a/@href').extract()
         for index, group in enumerate(emoticon_group):
             group_item = GroupItem()
-            group_id = md5_encoding(group.split("/")[-1].split(".")[0])
+            group_id = group.split("/")[-1].split(".")[0]
             group_item["objectId"] = md5_encoding(group_id)
             group_item["parentId"] = category["objectId"]
             group_item["name"] = response.xpath(
@@ -62,5 +62,5 @@ class HomeSpider(scrapy.Spider):
             href = img_group.xpath('../../a[%d]/@href' % (index + 1)).extract_first()
             emoticon_item["objectId"] = md5_encoding(href.split("/")[-1].split(".")[0])
             emoticon_item["parentId"] = group_id
-            emoticon_item["order"] = group_index
+            emoticon_item["order"] = group_index * (index + 1)
             yield emoticon_item

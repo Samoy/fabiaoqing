@@ -50,7 +50,7 @@ class FabiaoqingPipeline(object):
         elif isinstance(item, GroupItem):
             try:
                 sql = "insert into `group` (objectId,name,parentId,`order`) values (%s,%s,%s,%s)"
-                self.cursor.execute(sql, (item['name'], item["objectId"], item["parentId"], item["order"]))
+                self.cursor.execute(sql, (item["objectId"], item['name'], item["parentId"], item["order"]))
                 self.connect.commit()
             except IntegrityError as error:
                 if error.args[0] == 1062:
