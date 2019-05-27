@@ -49,7 +49,8 @@ class HomeSpider(scrapy.Spider):
         for page in pages:
             if "下一页" == page.xpath('text()').extract_first().strip().replace("\n", ""):
                 next_href = page.xpath('@href').extract_first().strip()
-                yield scrapy.Request(response.urljoin(next_href), callback=self.parse_group)
+                yield scrapy.Request(response.urljoin(next_href),
+                                     callback=lambda re, ca=category: self.parse_group(re, ca))
 
     # 解析详情数据
     # todo:添加表情包排序
