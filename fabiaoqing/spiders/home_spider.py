@@ -19,20 +19,30 @@ class HomeSpider(scrapy.Spider):
             category_item["name"] = category.xpath('text()').extract_first().strip().replace('\n', '')
             href = category.xpath('@href').extract_first()
             category_item["objectId"] = md5_encoding(href.strip().split("/")[-1].split(".")[0])
-            category_item["order"] = index
+            category_item["order"] = index + 1
             yield category_item
-            yield scrapy.Request(response.urljoin(href), callback=self.parse_group)
+            yield scrapy.Request(response.urljoin(href), callback=lambda re, ca=category_item: self.parse_group(re, ca))
 
     # todo:添加分组排序
-    def parse_group(self, response):
-        # 解析列表数据
-        href = response.css("#bqbcategory > a.item.active").xpath("@href").extract_first()
-        alias = href.strip().split("/")[-1].split(".")[0]
+    def parse_group(self, response, category):
+        # 当前页，为了排序使用，排序方法为当前页码乘以下标
+        current_page = response.css('#bqblist > div.ui.pagination.menu > a.active.item').xpath(
+            'text()').extract_first().strip().replace('\n', '')
         emoticon_group = response.xpath('//*[@id="bqblist"]/a/@href').extract()
-        for emoticon in emoticon_group:
+        for index, emoticon in enumerate(emoticon_group):
+            group_item = GroupItem()
+            group_id = response.url.strip().split("/")[-1].split(".")[0]
+            group_item["objectId"] = md5_encoding(group_id)
+            group_item["parentId"] = category["objectId"]
+            group_item["name"] = response.xpath(
+                '//*[@id="bqblist"]/a[%d]/div/header/h1/text()' % (index + 1)).extract_first().strip().replace('\n', '')
+            # 此处不用index直接乘上页码是由于0乘以任何数都为0
+            order = (index + 1) * int(current_page)
+            group_item["order"] = order
+            yield group_item
             # 请求详情数据
             yield scrapy.Request(response.urljoin(emoticon),
-                                 callback=lambda re, category=alias: self.parse_emoticon(re, category))
+                                 callback=lambda re, g_id=group_item["objectId"]: self.parse_emoticon(re, g_id))
         # 请求下一页数据
         pages = response.xpath('//*[@id="bqblist"]/div[3]/a')
         for page in pages:
@@ -42,19 +52,13 @@ class HomeSpider(scrapy.Spider):
 
     # 解析详情数据
     # todo:添加表情包排序
-    def parse_emoticon(self, response, category):
+    def parse_emoticon(self, response, group_id):
         img_group = response.xpath('//div[@class="bqppdiv1"]/img')
-        group_item = GroupItem()
-        group_id = md5_encoding(response.url.strip().split("/")[-1].split(".")[0])
-        group_item["objectId"] = group_id
-        group_item["parentId"] = md5_encoding(category)
-        group_item["name"] = response.xpath('//*[@id="bqb"]/div[1]/h1/text()').extract_first()
-        yield group_item
         for index, img in enumerate(img_group):
             emoticon_item = EmoticonItem()
             emoticon_item["url"] = img.xpath("@data-original").extract_first()
             emoticon_item["name"] = img.xpath("@alt").extract_first()
-            href = img_group.xpath('../../a[' + str(index + 1) + ']/@href').extract_first()
+            href = img_group.xpath('../../a[%d]/@href' % (index + 1)).extract_first()
             emoticon_item["objectId"] = md5_encoding(href.split("/")[-1].split(".")[0])
-            emoticon_item["parentId"] = group_item["objectId"]
+            emoticon_item["parentId"] = md5_encoding(group_id)
             yield emoticon_item
