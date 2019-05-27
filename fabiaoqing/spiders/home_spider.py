@@ -20,7 +20,7 @@ class HomeSpider(scrapy.Spider):
             href = category.xpath('@href').extract_first()
             category_item["objectId"] = md5_encoding(href.strip().split("/")[-1].split(".")[0])
             category_item["order"] = index + 1
-            yield category_item
+            # yield category_item
             yield scrapy.Request(response.urljoin(href), callback=lambda re, ca=category_item: self.parse_group(re, ca))
 
     # todo:添加分组排序
@@ -29,9 +29,9 @@ class HomeSpider(scrapy.Spider):
         current_page = response.css('#bqblist > div.ui.pagination.menu > a.active.item').xpath(
             'text()').extract_first().strip().replace('\n', '')
         emoticon_group = response.xpath('//*[@id="bqblist"]/a/@href').extract()
-        for index, emoticon in enumerate(emoticon_group):
+        for index, group in enumerate(emoticon_group):
             group_item = GroupItem()
-            group_id = response.url.strip().split("/")[-1].split(".")[0]
+            group_id = md5_encoding(group.split("/")[-1].split(".")[0])
             group_item["objectId"] = md5_encoding(group_id)
             group_item["parentId"] = category["objectId"]
             group_item["name"] = response.xpath(
@@ -41,7 +41,7 @@ class HomeSpider(scrapy.Spider):
             group_item["order"] = order
             yield group_item
             # 请求详情数据
-            yield scrapy.Request(response.urljoin(emoticon),
+            yield scrapy.Request(response.urljoin(group),
                                  callback=lambda re, g_id=group_item["objectId"], i=index: self.parse_emoticon(re, g_id,
                                                                                                                i))
         # 请求下一页数据
