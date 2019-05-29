@@ -7,7 +7,7 @@
 import pymysql
 from pymysql import IntegrityError
 
-from .items import CategoryItem, GroupItem, EmoticonItem
+from .items import CategoryItem, PackageItem, EmoticonItem
 
 
 class FabiaoqingPipeline(object):
@@ -41,24 +41,24 @@ class FabiaoqingPipeline(object):
     def process_item(self, item, spider):
         if isinstance(item, CategoryItem):
             try:
-                sql = "insert into category (objectId,name,`order`) values (%s,%s,%s)"
-                self.cursor.execute(sql, (item['objectId'], item['name'], item['order']))
+                sql = "insert into t_category (object_id,name,seq) values (%s,%s,%s)"
+                self.cursor.execute(sql, (item['object_id'], item['name'], item['seq']))
                 self.connect.commit()
             except IntegrityError as error:
                 if error.args[0] == 1062:
                     print("该数据已存在")
-        elif isinstance(item, GroupItem):
+        elif isinstance(item, PackageItem):
             try:
-                sql = "insert into `group` (objectId,name,parentId,`order`) values (%s,%s,%s,%s)"
-                self.cursor.execute(sql, (item["objectId"], item['name'], item["parentId"], item["order"]))
+                sql = "insert into t_package (object_id,name,parent_id,seq) values (%s,%s,%s,%s)"
+                self.cursor.execute(sql, (item["object_id"], item['name'], item["parent_id"], item["seq"]))
                 self.connect.commit()
             except IntegrityError as error:
                 if error.args[0] == 1062:
                     print("该数据已存在")
         elif isinstance(item, EmoticonItem):
             try:
-                sql = "insert into emoticon(objectId,name,url,parentId,`order`) values(%s,%s,%s,%s,%s)"
-                self.cursor.execute(sql, (item["objectId"], item["name"], item["url"], item["parentId"], item["order"]))
+                sql = "insert into t_emoticon(object_id,name,url,parent_id,seq) values(%s,%s,%s,%s,%s)"
+                self.cursor.execute(sql, (item["object_id"], item["name"], item["url"], item["parent_id"], item["seq"]))
                 self.connect.commit()
             except IntegrityError as error:
                 if error.args[0] == 1062:

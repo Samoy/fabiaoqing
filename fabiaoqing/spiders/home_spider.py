@@ -1,7 +1,8 @@
+# -*- coding: utf-8 -*-
 import scrapy
 
 from ..util import md5_encoding
-from ..items import CategoryItem, GroupItem, EmoticonItem
+from ..items import CategoryItem, PackageItem, EmoticonItem
 
 
 class HomeSpider(scrapy.Spider):
@@ -18,50 +19,50 @@ class HomeSpider(scrapy.Spider):
             category_item = CategoryItem()
             category_item["name"] = category.xpath('text()').extract_first().strip().replace('\n', '')
             href = category.xpath('@href').extract_first()
-            category_item["objectId"] = md5_encoding(href.strip().split("/")[-1].split(".")[0])
-            category_item["order"] = index + 1
+            category_item["object_id"] = md5_encoding(href.strip().split("/")[-1].split(".")[0])
+            category_item["seq"] = index + 1
             yield category_item
-            yield scrapy.Request(response.urljoin(href), callback=lambda re, ca=category_item: self.parse_group(re, ca))
+            yield scrapy.Request(response.urljoin(href),
+                                 callback=lambda re, ca=category_item: self.parse_package(re, ca))
 
-    # todo:添加分组排序
-    def parse_group(self, response, category):
+    def parse_package(self, response, category):
         # 当前页，为了排序使用，排序方法为当前页码乘以下标
         current_page = response.css('#bqblist > div.ui.pagination.menu > a.active.item').xpath(
             'text()').extract_first().strip().replace('\n', '')
         emoticon_group = response.xpath('//*[@id="bqblist"]/a/@href').extract()
         for index, group in enumerate(emoticon_group):
-            group_item = GroupItem()
+            package_item = PackageItem()
             group_id = group.split("/")[-1].split(".")[0]
-            group_item["objectId"] = md5_encoding(group_id)
-            group_item["parentId"] = category["objectId"]
-            group_item["name"] = response.xpath(
+            package_item["object_id"] = md5_encoding(group_id)
+            package_item["parent_id"] = category["object_id"]
+            package_item["name"] = response.xpath(
                 '//*[@id="bqblist"]/a[%d]/div/header/h1/text()' % (index + 1)).extract_first().strip().replace('\n', '')
             # 此处不用index直接乘上页码是由于0乘以任何数都为0
-            order = (index + 1) * int(current_page)
-            group_item["order"] = order
-            yield group_item
+            seq = (index + 1) * int(current_page)
+            package_item["seq"] = seq
+            yield package_item
             # 请求详情数据
             yield scrapy.Request(response.urljoin(group),
-                                 callback=lambda re, g_id=group_item["objectId"], i=index: self.parse_emoticon(re, g_id,
-                                                                                                               i))
+                                 callback=
+                                 lambda re, p_id=
+                                 package_item["object_id"], i=index: self.parse_emoticon(re, p_id, i))
         # 请求下一页数据
         pages = response.xpath('//*[@id="bqblist"]/div[3]/a')
         for page in pages:
             if "下一页" == page.xpath('text()').extract_first().strip().replace("\n", ""):
                 next_href = page.xpath('@href').extract_first().strip()
                 yield scrapy.Request(response.urljoin(next_href),
-                                     callback=lambda re, ca=category: self.parse_group(re, ca))
+                                     callback=lambda re, ca=category: self.parse_package(re, ca))
 
     # 解析详情数据
-    # todo:添加表情包排序
-    def parse_emoticon(self, response, group_id, group_index):
+    def parse_emoticon(self, response, package_id, package_index):
         img_group = response.xpath('//div[@class="bqppdiv1"]/img')
         for index, img in enumerate(img_group):
             emoticon_item = EmoticonItem()
             emoticon_item["url"] = img.xpath("@data-original").extract_first()
             emoticon_item["name"] = img.xpath("@alt").extract_first()
             href = img_group.xpath('../../a[%d]/@href' % (index + 1)).extract_first()
-            emoticon_item["objectId"] = md5_encoding(href.split("/")[-1].split(".")[0])
-            emoticon_item["parentId"] = group_id
-            emoticon_item["order"] = (group_index + 1) * (index + 1)
+            emoticon_item["object_id"] = md5_encoding(href.split("/")[-1].split(".")[0])
+            emoticon_item["parent_id"] = package_id
+            emoticon_item["seq"] = (package_index + 1) * (index + 1)
             yield emoticon_item

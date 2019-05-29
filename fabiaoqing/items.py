@@ -10,20 +10,21 @@ import scrapy
 
 class CategoryItem(scrapy.Item):
     name = scrapy.Field()
-    objectId = scrapy.Field()
-    order = scrapy.Field()
+    object_id = scrapy.Field()
+    # 次序
+    seq = scrapy.Field()
 
 
-class GroupItem(scrapy.Item):
+class PackageItem(scrapy.Item):
     name = scrapy.Field()
-    objectId = scrapy.Field()
-    parentId = scrapy.Field()
-    order = scrapy.Field()
+    object_id = scrapy.Field()
+    parent_id = scrapy.Field()
+    seq = scrapy.Field()
 
 
 class EmoticonItem(scrapy.Item):
     name = scrapy.Field()
     url = scrapy.Field()
-    objectId = scrapy.Field()
-    parentId = scrapy.Field()
-    order = scrapy.Field()
+    object_id = scrapy.Field()
+    parent_id = scrapy.Field()
+    seq = scrapy.Field()
