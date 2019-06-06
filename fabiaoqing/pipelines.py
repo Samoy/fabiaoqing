@@ -54,7 +54,9 @@ class FabiaoqingPipeline(object):
                 self.connect.commit()
             except IntegrityError as error:
                 if error.args[0] == 1062:
-                    print("该数据已存在")
+                    sql = "update t_package set seq=%s where object_id=%s"
+                    self.cursor.execute(sql, item["seq"], item["object_id"])
+                    self.connect.commit()
         elif isinstance(item, EmoticonItem):
             try:
                 sql = "insert into t_emoticon(object_id,name,url,parent_id,seq) values(%s,%s,%s,%s,%s)"
@@ -62,7 +64,9 @@ class FabiaoqingPipeline(object):
                 self.connect.commit()
             except IntegrityError as error:
                 if error.args[0] == 1062:
-                    print("该数据已存在")
+                    sql = "update t_emoticon set seq=%s where object_id=%s"
+                    self.cursor.execute(sql, item["seq"], item["object_id"])
+                    self.connect.commit()
         return item
 
     def close_spider(self, spider):
