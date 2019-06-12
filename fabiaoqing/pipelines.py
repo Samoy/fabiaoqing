@@ -55,7 +55,7 @@ class FabiaoqingPipeline(object):
             except IntegrityError as error:
                 if error.args[0] == 1062:
                     sql = "update t_package set seq=%s where object_id=%s"
-                    self.cursor.execute(sql, item["seq"], item["object_id"])
+                    self.cursor.execute(sql, (item["seq"], item["object_id"]))
                     self.connect.commit()
         elif isinstance(item, EmoticonItem):
             try:
@@ -65,7 +65,7 @@ class FabiaoqingPipeline(object):
             except IntegrityError as error:
                 if error.args[0] == 1062:
                     sql = "update t_emoticon set seq=%s where object_id=%s"
-                    self.cursor.execute(sql, item["seq"], item["object_id"])
+                    self.cursor.execute(sql, (item["seq"], item["object_id"]))
                     self.connect.commit()
         return item
 
