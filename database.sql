@@ -4,12 +4,12 @@ use fabiaoqing;
 # 创建类别表
 CREATE TABLE if not exists `t_category`
 (
-    `object_id`   varchar(16)  NOT NULL COMMENT '类别id,主键',
+    `object_id`   varchar(16)  NOT NULL COMMENT '类别id',
     `name`        varchar(255) NOT NULL COMMENT '类别名称',
     `seq`         int(11)      NOT NULL COMMENT '次序',
     `create_time` datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `update_time` datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-    PRIMARY KEY (`object_id`) USING BTREE
+    PRIMARY KEY (`object_id`) USING BTREE COMMENT '主键'
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8;
 
@@ -37,5 +37,15 @@ CREATE TABLE if not exists `t_emoticon`
     `create_time` datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `update_time` datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     PRIMARY KEY (`object_id`, `parent_id`) USING BTREE COMMENT '复合主键，当表情包id和分组id均不相同时，才认为不是一条记录'
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8;
+
+CREATE TABLE if not exists `t_tag`
+(
+    `object_id`   varchar(16)  NOT NULL COMMENT '标签id',
+    `name`        varchar(255) NOT NULL DEFAULT '' COMMENT '标签名称',
+    `create_time` datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `update_time` datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    PRIMARY KEY (`object_id`) USING BTREE COMMENT '主键'
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8;

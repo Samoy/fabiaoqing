@@ -28,3 +28,8 @@ class EmoticonItem(scrapy.Item):
     object_id = scrapy.Field()
     parent_id = scrapy.Field()
     seq = scrapy.Field()
+
+
+class TagItem(scrapy.Item):
+    name = scrapy.Field()
+    object_id = scrapy.Field()
